@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<OrleansConfiguration xmlns="urn:orleans">
+  <Globals>
+    <SystemStore SystemStoreType="None" DataConnectionString="http://127.0.0.1:8500" DeploymentId="MyOrleansDeployment" />
+    <StorageProviders>
+      <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
+      <Provider Type="Orleans.Storage.MemoryStorage" Name="PubSubStore" />
+    </StorageProviders>
+    <StreamProviders>
+      <Provider Type="Orleans.Providers.Streams.SimpleMessageStream.SimpleMessageStreamProvider" Name="CHAT_PROVIDER"/>
+    </StreamProviders>
+  </Globals>
+  <Defaults>
+    <Networking Address="localhost" Port="22222"/>
+    <ProxyingGateway Address="localhost" Port="40000" />
+  </Defaults>
+</OrleansConfiguration>
