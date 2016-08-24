@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Contracts;
 using DataObjects;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace ClientApp
 {
@@ -60,7 +61,8 @@ namespace ClientApp
         {
             while (true)
             {
-                Console.WriteLine($"{_username}>");
+                Console.WriteLine();
+                Console.Write($"{_username}>");
 
                 var line = await Task.Run(() => Console.ReadLine());
 
@@ -85,28 +87,35 @@ namespace ClientApp
 
         public void MessageRecieved(ChatMessage msg)
         {
+            Console.WriteLine();
             Console.WriteLine($"{msg.Sender} : {msg.Text}");
-            Console.WriteLine($"{_username}>");
+
+            Console.WriteLine();
+            Console.Write($"{_username}>");
         }
 
         public void ChatJoined(ChatMessage msg)
         {
             var color = Console.ForegroundColor;
-            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine();
             Console.WriteLine($"{msg.Sender} joined chat");
             Console.ForegroundColor = color;
 
-            Console.WriteLine($"{_username}>");
+            Console.WriteLine();
+            Console.Write($"{_username}>");
         }
 
         public void ChatLeft(ChatMessage msg)
         {
             var color = Console.ForegroundColor;
-            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine();
             Console.WriteLine($"{msg.Sender} left chat");
             Console.ForegroundColor = color;
 
-            Console.WriteLine($"{_username}>");
+            Console.WriteLine();
+            Console.Write($"{_username}>");
         }
     }
 }

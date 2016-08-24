@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Contracts;
 using DataObjects;
 using Orleans;
+using Orleans.Concurrency;
 using Orleans.Streams;
 
 namespace TestGrains
 {
+    [Reentrant]
     public class ChatMember : Orleans.Grain, IChatMember
     {
         private bool _isActive;
@@ -64,13 +66,13 @@ namespace TestGrains
             _isActive = false;
 
             await Task.WhenAll(
-                _subscriptionMessages?.UnsubscribeAsync(),
-                _subscriptionJoins?.UnsubscribeAsync(),
-                _subscriptionLeaves?.UnsubscribeAsync());
+                _subscriptionMessages?.UnsubscribeAsync() ?? Task.CompletedTask,
+                _subscriptionJoins?.UnsubscribeAsync() ?? Task.CompletedTask,
+                _subscriptionLeaves?.UnsubscribeAsync() ?? Task.CompletedTask);
 
+            _subscriptionMessages = null;
             _subscriptionJoins = null;
             _subscriptionLeaves = null;
-            _subscriptionMessages = null;
 
             await GrainFactory.GetGrain<IChat>(_chatRoom).Leave(this.GetPrimaryKeyString(), DateTime.Now);
 
@@ -102,17 +104,20 @@ namespace TestGrains
 
         private Task PrecessMessage(ChatMessage message, StreamSequenceToken token)
         {
+            if(message.Text == this.GetPrimaryKeyString())
+                throw new ArithmeticException();
+
             _callbacks.MessageRecieved(message);
             return Task.CompletedTask;
         }
         private Task PrecessJoin(ChatMessage message, StreamSequenceToken token)
         {
-            _callbacks.ChatLeft(message);
+            _callbacks.ChatJoined(message);
             return Task.CompletedTask;
         }
         private Task PrecessLeave(ChatMessage message, StreamSequenceToken token)
         {
-            _callbacks.ChatJoined(message);
+            _callbacks.ChatLeft(message);
             return Task.CompletedTask;
         }
     }
