@@ -6,6 +6,8 @@
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
       <Provider Type="Orleans.Storage.MemoryStorage" Name="PubSubStore" />
+      <Provider Type="MongoStorage.MongoStorageProvider" Name="CHAT_STORAGE"  Database="Orleans" ConnectionString="mongodb://localhost:27017/"/>
+      <!-- Provider Type="Orleans.Storage.MongoDB.MongoDBStorage, Orleans.Storage.MongoDB" Name="CHAT_STORAGE" Database="Orleans" ConnectionString="mongodb://localhost:27017/" /-->
     </StorageProviders>
     <StreamProviders>
       <Provider Type="Orleans.Providers.Streams.SimpleMessageStream.SimpleMessageStreamProvider" Name="CHAT_PROVIDER"/>

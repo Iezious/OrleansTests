@@ -8,45 +8,64 @@ using Contracts;
 using DataObjects;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Providers;
 using Orleans.Streams;
 
 namespace TestGrains
 {
-    [Reentrant]
-    public class ChatMember : Orleans.Grain, IChatMember
+    [Reentrant, StorageProvider(ProviderName = "CHAT_STORAGE")]
+    public class ChatMember : Orleans.Grain<ChatMember.ChatMemberState>, IChatMember
     {
+
+        public class ChatMemberState 
+        {
+            public DateTime LastOnline { get; set; }
+            public int TotalMessages { get; set; }
+
+            public string Chat { get; set; }
+
+            public Guid ChatRoomId { get; set; }
+        }
+
         private bool _isActive;
         private DateTime _lastPing;
         private IDisposable _timer;
         private IChatMemberObserver _callbacks;
-        private string _chatRoom = null;
+        private string _chatRoom ;
         private Guid _chatRoomId;
 
-        private StreamSubscriptionHandle<ChatMessage> _subscriptionMessages;
-        private StreamSubscriptionHandle<ChatMessage> _subscriptionJoins;
-        private StreamSubscriptionHandle<ChatMessage> _subscriptionLeaves;
-
-
-        public override Task OnActivateAsync()
+        public override async Task OnActivateAsync()
         {
             _timer = RegisterTimer(Invalidate, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
             _lastPing = DateTime.Now;
 
-            return base.OnActivateAsync();
+            State = new ChatMemberState { TotalMessages = 0, LastOnline = DateTime.Now };
+            await ReadStateAsync();
+
+            _chatRoom = State.Chat;
+            _chatRoomId = State.ChatRoomId;
+
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessMessage)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessLeave)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessJoin)));
+
+            await base.OnActivateAsync();
         }
 
-
-        public override Task OnDeactivateAsync()
+        public override async Task OnDeactivateAsync()
         {
             _timer.Dispose();
             _timer = null;
 
-            return base.OnDeactivateAsync();
+            await WriteStateAsync();
+            await base.OnDeactivateAsync();
         }
 
         public async Task SendMessage(string message)
         {
             await GrainFactory.GetGrain<IChat>(_chatRoom).SendMessage(this.GetPrimaryKeyString(), DateTime.Now, message);
+            State.TotalMessages++;
+            await WriteStateAsync();
         }
 
         public async Task Join(string chat, IChatMemberObserver callbacks)
@@ -57,6 +76,11 @@ namespace TestGrains
             _chatRoomId = new Guid(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(chat)));
             _callbacks = callbacks;
 
+            State.LastOnline = DateTime.Now;
+            State.Chat = chat;
+            State.ChatRoomId = _chatRoomId;
+            await WriteStateAsync();
+
             await SubscribeStreams();
             await GrainFactory.GetGrain<IChat>(_chatRoom).Join(this.GetPrimaryKeyString(), DateTime.Now);
         }
@@ -66,14 +90,12 @@ namespace TestGrains
             _isActive = false;
 
             await Task.WhenAll(
-                _subscriptionMessages?.UnsubscribeAsync() ?? Task.CompletedTask,
-                _subscriptionJoins?.UnsubscribeAsync() ?? Task.CompletedTask,
-                _subscriptionLeaves?.UnsubscribeAsync() ?? Task.CompletedTask);
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync())),
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync())),
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync()))
+            );
 
-            _subscriptionMessages = null;
-            _subscriptionJoins = null;
-            _subscriptionLeaves = null;
-
+            await WriteStateAsync();
             await GrainFactory.GetGrain<IChat>(_chatRoom).Leave(this.GetPrimaryKeyString(), DateTime.Now);
 
             DeactivateOnIdle();
@@ -97,9 +119,9 @@ namespace TestGrains
 
         private async Task SubscribeStreams()
         {
-            _subscriptionMessages = await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").SubscribeAsync(PrecessMessage);
-            _subscriptionLeaves = await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").SubscribeAsync(PrecessLeave);
-            _subscriptionJoins = await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").SubscribeAsync(PrecessJoin);
+            await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").SubscribeAsync(PrecessMessage);
+            await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").SubscribeAsync(PrecessLeave);
+            await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").SubscribeAsync(PrecessJoin);
         }
 
         private Task PrecessMessage(ChatMessage message, StreamSequenceToken token)
