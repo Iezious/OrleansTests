@@ -5,8 +5,8 @@
     <SystemStore SystemStoreType="None" DataConnectionString="http://127.0.0.1:8500" DeploymentId="MyOrleansDeployment" />
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
-      <Provider Type="Orleans.Storage.MemoryStorage" Name="PubSubStore" />
-      <Provider Type="MongoStorage.MongoStorageProvider" Name="CHAT_STORAGE"  Database="Orleans" ConnectionString="mongodb://localhost:27017/"/>
+      <Provider Type="MongoStorage.MongoStorageProvider" Name="PubSubStore" Database="Orleans" ConnectionString="mongodb://localhost:27017/" Binary="true" />
+      <Provider Type="MongoStorage.MongoStorageProvider" Name="CHAT_STORAGE"  Database="Orleans" ConnectionString="mongodb://localhost:27017/" UseStringKey="true"/>
       <!-- Provider Type="Orleans.Storage.MongoDB.MongoDBStorage, Orleans.Storage.MongoDB" Name="CHAT_STORAGE" Database="Orleans" ConnectionString="mongodb://localhost:27017/" /-->
     </StorageProviders>
     <StreamProviders>
