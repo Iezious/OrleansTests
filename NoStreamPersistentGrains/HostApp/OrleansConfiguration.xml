@@ -7,7 +7,7 @@
       <Provider Type="Orleans.Storage.MemoryStorage" Name="Default" />
       <Provider Type="MongoStorage.MongoStorageProvider" Name="PubSubStore" Database="Orleans" ConnectionString="mongodb://localhost:27017/" Binary="false" />
       <Provider Type="MongoStorage.MongoStorageProvider" Name="CHAT_STORAGE"  Database="Orleans" ConnectionString="mongodb://localhost:27017/" UseStringKey="true"/>
-      <!-- Provider Type="Orleans.Storage.MongoDB.MongoDBStorage, Orleans.Storage.MongoDB" Name="CHAT_STORAGE" Database="Orleans" ConnectionString="mongodb://localhost:27017/" /-->
+      <Provider Type="MongoStorage.MongoStorageProvider" Name="PING_STORE"  Database="Orleans" ConnectionString="mongodb://localhost:27017/" UseStringKey="true" Binary="true"/>
     </StorageProviders>
     <StreamProviders>
       <Provider Type="Orleans.Providers.Streams.SimpleMessageStream.SimpleMessageStreamProvider" Name="CHAT_PROVIDER"/>

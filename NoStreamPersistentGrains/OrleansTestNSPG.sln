@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostApp", "HostApp\HostApp.csproj", "{059167C3-AC46-459A-B0C9-4C591EEAABFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{F74B8A49-D104-4E1D-BE6E-A6035D02DD96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGrains", "TestGrains\TestGrains.csproj", "{F9B95188-5E77-4E0C-8BF8-C0D70D8751A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataObjects", "DataObjects\DataObjects.csproj", "{310A3A62-1D6F-4A41-BDF4-360C35AA86C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApp", "ClientApp\ClientApp.csproj", "{8B1A9C50-0088-46F2-BA7A-90BF5998ED52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoStorage", "MongoStorage\MongoStorage.csproj", "{62CD92E5-C4F4-48A0-A616-ECC36EC8EB99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingClient", "PingClient\PingClient.csproj", "{5D674E58-820A-47AE-9231-BE62AA049A1D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{059167C3-AC46-459A-B0C9-4C591EEAABFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{059167C3-AC46-459A-B0C9-4C591EEAABFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{059167C3-AC46-459A-B0C9-4C591EEAABFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{059167C3-AC46-459A-B0C9-4C591EEAABFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F74B8A49-D104-4E1D-BE6E-A6035D02DD96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F74B8A49-D104-4E1D-BE6E-A6035D02DD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F74B8A49-D104-4E1D-BE6E-A6035D02DD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F74B8A49-D104-4E1D-BE6E-A6035D02DD96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9B95188-5E77-4E0C-8BF8-C0D70D8751A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9B95188-5E77-4E0C-8BF8-C0D70D8751A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9B95188-5E77-4E0C-8BF8-C0D70D8751A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9B95188-5E77-4E0C-8BF8-C0D70D8751A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{310A3A62-1D6F-4A41-BDF4-360C35AA86C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{310A3A62-1D6F-4A41-BDF4-360C35AA86C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{310A3A62-1D6F-4A41-BDF4-360C35AA86C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{310A3A62-1D6F-4A41-BDF4-360C35AA86C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B1A9C50-0088-46F2-BA7A-90BF5998ED52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B1A9C50-0088-46F2-BA7A-90BF5998ED52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B1A9C50-0088-46F2-BA7A-90BF5998ED52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B1A9C50-0088-46F2-BA7A-90BF5998ED52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62CD92E5-C4F4-48A0-A616-ECC36EC8EB99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62CD92E5-C4F4-48A0-A616-ECC36EC8EB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62CD92E5-C4F4-48A0-A616-ECC36EC8EB99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62CD92E5-C4F4-48A0-A616-ECC36EC8EB99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D674E58-820A-47AE-9231-BE62AA049A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D674E58-820A-47AE-9231-BE62AA049A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D674E58-820A-47AE-9231-BE62AA049A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D674E58-820A-47AE-9231-BE62AA049A1D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

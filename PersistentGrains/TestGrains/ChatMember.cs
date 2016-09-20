@@ -20,6 +20,7 @@ namespace TestGrains
         public class ChatMemberState 
         {
             public DateTime LastOnline { get; set; }
+
             public int TotalMessages { get; set; }
 
             public string Chat { get; set; }
@@ -45,9 +46,9 @@ namespace TestGrains
             _chatRoom = State.Chat;
             _chatRoomId = State.ChatRoomId;
 
-            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessMessage)));
-            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessLeave)));
-            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).Select(subs => subs.ResumeAsync(PrecessJoin)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessMessage)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessLeave)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessJoin)));
 
             await base.OnActivateAsync();
         }
@@ -90,9 +91,9 @@ namespace TestGrains
             _isActive = false;
 
             await Task.WhenAll(
-                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync())),
-                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync())),
-                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).Select(subs => subs.UnsubscribeAsync()))
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).NullSafe().Select(subs => subs.UnsubscribeAsync())),
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).NullSafe().Select(subs => subs.UnsubscribeAsync())),
+                Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).NullSafe().Select(subs => subs.UnsubscribeAsync()))
             );
 
             await WriteStateAsync();

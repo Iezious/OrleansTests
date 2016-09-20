@@ -73,23 +73,15 @@ namespace MongoStorage
 
         private byte[] BinarySerialize(object data)
         {
-            using (var ms = new MemoryStream())
-            using (var sw = new BsonWriter(ms))
-            {
-                var js = new JsonSerializer();
-                js.Serialize(sw, data);
-                return ms.ToArray();
-            }
+            var ms = new BinaryTokenStreamWriter();
+            new BinaryFormatterSerializer().Serialize(data, ms, data.GetType());
+            return ms.ToByteArray();
         }
 
-        private void BinaryDeserialize(byte[] data, object tofill)
+        private object BinaryDeserialize(byte[] data, Type type)
         {
-            using (var ms = new MemoryStream(data))
-            using (var reader = new Newtonsoft.Json.Bson.BsonReader(ms))
-            {
-                var js = new JsonSerializer();
-                js.Populate(reader, tofill);
-            }
+            var ms = new BinaryTokenStreamReader(data);
+            return new BinaryFormatterSerializer().Deserialize(type, ms);
         }
 
         private string JSONSerialize(object data)
@@ -125,7 +117,7 @@ namespace MongoStorage
             }
 
             var data = bdata["Data"].AsByteArray;
-            BinaryDeserialize(data, grainState.State);
+            grainState.State = BinaryDeserialize(data, grainState.State.GetType());
         }
 
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
