@@ -12,8 +12,19 @@ using Orleans.Streams;
 
 namespace TestGrains
 {
+    public class ChatMemberState
+    {
+        public DateTime LastOnline { get; set; }
+
+        public int TotalMessages { get; set; }
+
+        public string Chat { get; set; }
+
+        public Guid ChatRoomId { get; set; }
+    }
+
     [Reentrant]
-    public class ChatMember : Orleans.Grain, IChatMember
+    public class ChatMember : Orleans.Grain<ChatMemberState>, IChatMember
     {
         private bool _isActive;
         private DateTime _lastPing;
@@ -27,12 +38,22 @@ namespace TestGrains
         private StreamSubscriptionHandle<ChatMessage> _subscriptionLeaves;
 
 
-        public override Task OnActivateAsync()
+        public override async Task OnActivateAsync()
         {
             _timer = RegisterTimer(Invalidate, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
             _lastPing = DateTime.Now;
 
-            return base.OnActivateAsync();
+            State = new ChatMemberState { TotalMessages = 0, LastOnline = DateTime.Now };
+            await ReadStateAsync();
+
+            _chatRoom = State.Chat;
+            _chatRoomId = State.ChatRoomId;
+
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Messages").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessMessage)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Leaves").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessLeave)));
+            await Task.WhenAll((await GetStreamProvider("CHAT_PROVIDER").GetStream<ChatMessage>(_chatRoomId, "Joins").GetAllSubscriptionHandles()).NullSafe().Where(s => s != null).Select(subs => subs.ResumeAsync(PrecessJoin)));
+
+            await base.OnActivateAsync();
         }
 
 
