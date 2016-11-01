@@ -136,9 +136,10 @@ namespace HostApp
             }
 
             var config = new ClusterConfiguration(File.OpenText("OrleansConfiguration.xml"));// LocalhostPrimarySilo();
-            
-            config.Defaults.Port = 22222 + new Random().Next(4000);
-            config.Defaults.ProxyGatewayEndpoint.Port = 40000 + new Random().Next(1000);
+            var ra = new Random((int)DateTime.Now.Ticks);
+
+            config.Defaults.Port = 22222 + ra.Next(4000);
+            config.Defaults.ProxyGatewayEndpoint.Port = 40000 + ra.Next(1000);
 
             config.AddMemoryStorageProvider();
             siloHost = new SiloHost(siloName, config);

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans.Providers;
 using Orleans.Runtime;
+using Castle;
 
 namespace TestGrains
 {
@@ -15,6 +16,7 @@ namespace TestGrains
 
         public Task Init(string name, IProviderRuntime providerRuntime, IProviderConfiguration config)
         {
+
             _stopperTokenSource = new CancellationTokenSource();
             _fetcher = providerRuntime.GrainFactory.GetGrain<IFetcher>("fetcher");
 
