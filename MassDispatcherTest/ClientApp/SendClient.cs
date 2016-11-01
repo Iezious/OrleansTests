@@ -48,6 +48,9 @@ namespace ClientApp
         private readonly string _chatname;
         private IOrchestrator _manager;
 
+        private SendClientCallBack _touchReporter = new SendClientCallBack("check nodes");
+        private SendClientCallBack _workReporter = new SendClientCallBack("notify nodes");
+
         public SendClient(string username, bool wait, string chatname)
         {
             this._username = username;
@@ -110,7 +113,7 @@ namespace ClientApp
 
         private async Task Touch()
         {
-            await _manager.StartCreation(await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(new SendClientCallBack("'check nodes'")));
+            await _manager.StartCreation(await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(_touchReporter));
         }
 
         private async Task Work()
@@ -124,7 +127,7 @@ namespace ClientApp
                 DataFieldString = Encoding.ASCII.GetString(Enumerable.Range(ra.Next(100, 200), ra.Next(ra.Next(10, 1000))).Select(i => (byte) ra.Next('0', 'z')).ToArray())
             };
 
-            await _manager.StartNotification(data, await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(new SendClientCallBack("'exec nodes'")));
+            await _manager.StartNotification(data, await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(_workReporter));
         }
     }
 }
