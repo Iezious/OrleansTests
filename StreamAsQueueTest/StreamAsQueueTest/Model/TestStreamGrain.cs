@@ -39,7 +39,7 @@ namespace StreamAsQueueTest
 
         private async Task OnData(string data, StreamSequenceToken token)
         {
-            await Task.Delay(1000);
+            await Task.Delay(7000);
             index++;
 
             Console.WriteLine(index + " => " + data);

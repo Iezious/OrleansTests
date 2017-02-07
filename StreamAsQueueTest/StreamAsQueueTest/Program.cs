@@ -26,21 +26,12 @@ namespace StreamAsQueueTest
             });
 
             var config = ClientConfiguration.LocalhostSilo();
-#if STREAM
-            config.AddSimpleMessageStreamProvider("Queue", true, true, StreamPubSubType.ImplicitOnly);
-#endif
             GrainClient.Initialize(config);
 
-#if STREAM
-            var stream = GrainClient.GetStreamProvider("Queue").GetStream<string>(new Guid(), "NAMER");
-#endif
 
 #if STREAM
-            Enumerable.Range(0, 100).All(i =>
-            {
-                stream.OnNextAsync("i" + i);
-                return true;
-            });
+            var grain = GrainClient.GrainFactory.GetGrain<IStreamRunner>(new Guid());
+            grain.Execute(100);
 #else
             var grain = GrainClient.GrainFactory.GetGrain<IGrainRunner>(new Guid());
             grain.Execute(100);

@@ -1,10 +1,11 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-
+using Orleans.Providers;
 using Orleans.Runtime.Configuration;
 using Orleans.Runtime.Host;
 using Orleans.Streams;
+using System.Collections.Generic;
 
 namespace StreamAsQueueTest
 {
@@ -139,7 +140,13 @@ namespace StreamAsQueueTest
             config.AddMemoryStorageProvider();
             config.Globals.ResponseTimeout = TimeSpan.FromSeconds(10);
             config.Globals.ResendOnTimeout = true;
-            config.AddSimpleMessageStreamProvider("Queue", true, true, StreamPubSubType.ImplicitOnly);
+            config.AddMemoryStorageProvider("PubSubStore");
+            //config.Globals.RegisterStreamProvider<MemoryStreamProvider>("Queue");// AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
+
+            var conf = new Dictionary<string, string>();
+            conf.Add("MaxEventDeliveryTime","1hr");
+
+            config.Globals.RegisterStreamProvider<MemoryStreamProvider>("Queue", conf);// AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
             siloHost = new SiloHost(siloName, config);
 
             if (deploymentId != null)
@@ -171,3 +178,4 @@ Where:
         }
     }
 }
+
