@@ -16,6 +16,6 @@ namespace Contracts
     public interface IOrchestrator : IGrainWithStringKey
     {
         Task StartCreation(IOrchestratorCallBack onFinished);
-        Task StartNotification(Payload data, IOrchestratorCallBack onFinished);
+        Task StartSpreadedNotification(Payload data, IOrchestratorCallBack onFinished);
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Consul;
 using Contracts;
 using Orleans;
 using Orleans.Concurrency;
@@ -50,6 +51,8 @@ namespace ClientApp
 
         private SendClientCallBack _touchReporter = new SendClientCallBack("check nodes");
         private SendClientCallBack _workReporter = new SendClientCallBack("notify nodes");
+        private SendClientCallBack _spreadReporter = new SendClientCallBack("spread nodes");
+        private SendClientCallBack _streamReporter = new SendClientCallBack("stream nodes");
 
         public SendClient(string username, bool wait, string chatname)
         {
@@ -104,9 +107,9 @@ namespace ClientApp
                     await Touch();
                 }
 
-                if (line == "w" || line == "s")
+                if (line == "w" || line == "d")
                 {
-                    await Work();
+                    await Distribute();
                 }
             }
         }
@@ -116,18 +119,19 @@ namespace ClientApp
             await _manager.StartCreation(await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(_touchReporter));
         }
 
-        private async Task Work()
+
+        private async Task Distribute()
         {
             var ra = new Random((int)DateTime.Now.Ticks);
 
             var data = new Payload
             {
                 DataFieldInt = ra.Next(0, int.MaxValue),
-                DataFieldDouble = ra.NextDouble()*1000000,
-                DataFieldString = Encoding.ASCII.GetString(Enumerable.Range(ra.Next(100, 200), ra.Next(ra.Next(10, 1000))).Select(i => (byte) ra.Next('0', 'z')).ToArray())
+                DataFieldDouble = ra.NextDouble() * 1000000,
+                DataFieldString = Encoding.ASCII.GetString(Enumerable.Range(ra.Next(100, 200), ra.Next(ra.Next(10, 1000))).Select(i => (byte)ra.Next('0', 'z')).ToArray())
             };
 
-            await _manager.StartNotification(data, await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(_workReporter));
+            await _manager.StartSpreadedNotification(data, await GrainClient.GrainFactory.CreateObjectReference<IOrchestratorCallBack>(_spreadReporter));
         }
     }
 }

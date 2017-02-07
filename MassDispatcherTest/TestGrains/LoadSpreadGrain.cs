@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 using Contracts;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Placement;
 
 namespace TestGrains
 {
-    public interface IBatchWorker : IGrainWithIntegerKey
+    public interface ILoadSpreader : IGrainWithIntegerKey
     {
-        Task Touch(int[] ids);
         Task RunBatch(int[] ids, Payload data);
+        Task Touch(int[] ids);
     }
 
-    [StatelessWorker, Reentrant]
-    public class BatchWorker : Grain, IBatchWorker
+    [Reentrant, RandomPlacement]
+    public class LoadSpreadGrain : Grain, ILoadSpreader
     {
         public async Task Touch(int[] ids)
         {
@@ -35,5 +36,16 @@ namespace TestGrains
                 await GrainFactory.GetGrain<IActionGrain>(id).Execute(data);
             }));
         }
+
+        /*
+        public async Task Touch(int[] ids)
+        {
+            await GrainFactory.GetGrain<IBatchWorker>(this.GetPrimaryKeyLong()).Touch(ids);
+        }
+
+        public async Task RunBatch(int[] ids, Payload data)
+        {
+            await GrainFactory.GetGrain<IBatchWorker>(this.GetPrimaryKeyLong()).RunBatch(ids, data);
+        }*/
     }
 }
