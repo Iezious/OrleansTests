@@ -137,16 +137,11 @@ namespace StreamAsQueueTest
             }
 
             var config = ClusterConfiguration.LocalhostPrimarySilo();
-            config.AddMemoryStorageProvider();
-            config.Globals.ResponseTimeout = TimeSpan.FromSeconds(10);
-            config.Globals.ResendOnTimeout = true;
-            config.AddMemoryStorageProvider("PubSubStore");
-            //config.Globals.RegisterStreamProvider<MemoryStreamProvider>("Queue");// AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
-
-            var conf = new Dictionary<string, string>();
-            conf.Add("MaxEventDeliveryTime","1hr");
-
-            config.Globals.RegisterStreamProvider<MemoryStreamProvider>("Queue", conf);// AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
+//            config.AddMemoryStorageProvider();
+//            config.Globals.ResponseTimeout = TimeSpan.FromSeconds(10);
+//            config.Globals.ResendOnTimeout = true;
+//            config.AddMemoryStorageProvider("PubSubStore");
+            config.AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
             siloHost = new SiloHost(siloName, config);
 
             if (deploymentId != null)
