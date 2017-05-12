@@ -15,7 +15,7 @@ namespace StreamAsQueueTest
             var guid = this.GetPrimaryKey();
             var streamProvider = GetStreamProvider("Queue");
             var stream = streamProvider.GetStream<string>(guid, "NAMER");
-            await stream.SubscribeAsync<string>(OnData, OnError, OnComplete);
+            await stream.SubscribeAsync<string>(OnData);
 
             await base.OnActivateAsync();
         }
