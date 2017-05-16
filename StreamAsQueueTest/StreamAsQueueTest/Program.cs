@@ -30,8 +30,8 @@ namespace StreamAsQueueTest
 
 
 #if STREAM
-            var grain = GrainClient.GrainFactory.GetGrain<IStreamRunner>(new Guid());
-            grain.Execute(100);
+            var grain = GrainClient.GrainFactory.GetGrain<IStreamRunner>(Guid.NewGuid());
+            grain.Execute(500, 50000);
 #else
             var grain = GrainClient.GrainFactory.GetGrain<IGrainRunner>(new Guid());
             grain.Execute(100);

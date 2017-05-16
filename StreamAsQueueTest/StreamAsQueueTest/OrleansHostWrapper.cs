@@ -6,6 +6,7 @@ using Orleans.Runtime.Configuration;
 using Orleans.Runtime.Host;
 using Orleans.Streams;
 using System.Collections.Generic;
+using SBtech.Orleans.PersistentStreams.Aerospike;
 
 namespace StreamAsQueueTest
 {
@@ -141,7 +142,24 @@ namespace StreamAsQueueTest
 //            config.Globals.ResponseTimeout = TimeSpan.FromSeconds(10);
 //            config.Globals.ResendOnTimeout = true;
 //            config.AddMemoryStorageProvider("PubSubStore");
-            config.AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
+//            config.AddSimpleMessageStreamProvider("Queue", true, false, StreamPubSubType.ImplicitOnly);
+
+            var props = new Dictionary<string, string>
+            {
+                {AerospikeStreamConfig.Hosts, "10.10.10.177,10.10.10.178,10.10.10.179"},
+                {AerospikeStreamConfig.Namespace, "orleans"},
+                {AerospikeStreamConfig.Collection, "stream-queue"},
+                {AerospikeStreamConfig.MaxRetries, "3"},
+                {AerospikeStreamConfig.QueueCount, "24"},
+                {PersistentStreamProviderConfig.STREAM_PUBSUB_TYPE, "ImplicitOnly" },
+                {PersistentStreamProviderConfig.GET_QUEUE_MESSAGES_TIMER_PERIOD, "20ms"},
+                {PersistentStreamProviderConfig.MAX_EVENT_DELIVERY_TIME, "60s" },
+
+            };
+
+            config.Globals.RegisterStreamProvider<AerospikeStreamProvider>("Queue", props);
+            
+
             siloHost = new SiloHost(siloName, config);
 
             if (deploymentId != null)

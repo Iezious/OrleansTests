@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamAsQueueTest", "StreamAsQueueTest\StreamAsQueueTest.csproj", "{77632505-9C5D-4939-B4B9-BEF3A98C1C45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistentStreams", "PersistentStreams\PersistentStreams.csproj", "{C028981F-9A1F-401B-8A99-329D724BB93B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SBtech.Orleans.PersistentStreams", "PersistentStreams\SBtech.Orleans.PersistentStreams.csproj", "{C028981F-9A1F-401B-8A99-329D724BB93B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,6 +8,6 @@ namespace StreamAsQueueTest
     /// </summary>
 	public interface IStreamRunner : IGrainWithGuidKey
     {
-        Task Execute(int number);
+        Task Execute(int nodes, int messages);
     }
 }
